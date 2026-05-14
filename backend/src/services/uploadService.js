@@ -17,6 +17,22 @@ const uploadToCloud = (fileBuffer, originalName) => {
   });
 };
 
+// PRODUCTION FEATURE: Delete file from cloud if DB fails
+const deleteFromCloud = (fileId) => {
+  return new Promise((resolve, reject) => {
+    imagekit.deleteFile(fileId, function(error, result) {
+      if(error) {
+        console.error("Failed to delete orphaned image:", error);
+        reject(error);
+      } else {
+        console.log("Orphaned image successfully deleted from ImageKit.");
+        resolve(result);
+      }
+    });
+  });
+};
+
 module.exports = {
-  uploadToCloud
+  uploadToCloud,
+  deleteFromCloud
 };
