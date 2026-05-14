@@ -12,6 +12,8 @@ ReCircuit AI is a GenAI-powered platform designed to tackle the global e-waste c
 - **Vision AI Integration:** Integrates Google's `gemini-flash-latest` multimodal AI to analyze electronic components.
 - **Strict Prompt Engineering:** The AI is engineered to return strictly typed JSON payloads containing fields like `reuseScore`, `hazardLevel`, and `diyIdeas`.
 - **High-Performance Execution:** Uses `Promise.all()` to execute both the cloud upload and the AI vision analysis simultaneously in parallel, cutting API latency by ~50%.
+- **Database Persistence & Cloud Rollback:** AI scans are permanently stored in MongoDB. If the database save fails, an automated webhook forcefully deletes the orphaned image from ImageKit to preserve cloud storage.
+- **Secure Authentication:** JWT-based stateless authentication system. Uses Mongoose `pre('save')` hooks to automatically hash passwords with `bcryptjs` before they hit the database.
 - **Centralized Error Handling:** Global middleware to catch and format API errors cleanly.
 
 ## 🛠️ Tech Stack (Backend)
@@ -32,8 +34,10 @@ ReCircuit-AI/
 │   │   ├── config/        # DB & ImageKit configurations
 │   │   ├── controllers/   # API request handlers
 │   │   ├── middleware/    # Global error handlers & Multer config
+│   │   ├── models/        # Mongoose database schemas (User, Scan)
 │   │   ├── routes/        # Express routers
-│   │   └── services/      # Cloud & AI streaming logic
+│   │   ├── services/      # Cloud & AI streaming logic
+│   │   └── utils/         # Helper functions (JWT generators)
 │   ├── app.js             # Express app setup
 │   └── server.js          # Server entry point
 └── package.json           # Root shortcut scripts
@@ -51,11 +55,10 @@ Uploads an image of an electronic component, stores it in ImageKit, and returns 
 ```json
 {
   "success": true,
-  "message": "Image uploaded and analyzed successfully!",
-  "imageUrl": "https://ik.imagekit.io/.../recircuit_uploads/...",
-  "cloudId": "...",
-  "originalName": "arduino.jpg",
-  "analysis": {
+  "message": "Image uploaded, analyzed, and saved to database successfully!",
+  "data": {
+    "imageUrl": "https://ik.imagekit.io/.../recircuit_uploads/...",
+    "cloudId": "...",
     "componentName": "Arduino Uno",
     "category": "Microcontroller",
     "reuseScore": 95,
@@ -66,10 +69,18 @@ Uploads an image of an electronic component, stores it in ImageKit, and returns 
       "Build a smart plant watering system",
       "Create a custom macro keyboard"
     ],
-    "safetyInstructions": "Handle carefully to avoid static discharge. No toxic materials."
+    "safetyInstructions": "Handle carefully...",
+    "_id": "60d5ec49b392...",
+    "createdAt": "2026-05-14T..."
   }
 }
 ```
+
+### `POST /api/auth/register`
+Registers a new user (hashes password securely via Mongoose hook) and returns a JSON Web Token.
+
+### `POST /api/auth/login`
+Authenticates a user via email/password and returns a JSON Web Token.
 
 ## ⚙️ Local Setup & Installation
 
@@ -95,6 +106,9 @@ IMAGEKIT_PRIVATE_KEY=your_imagekit_private_key
 IMAGEKIT_URL_ENDPOINT=https://ik.imagekit.io/your_id
 
 GEMINI_API_KEY=your_gemini_api_key
+
+JWT_SECRET=your_super_secret_jwt_key
+JWT_EXPIRES_IN=30d
 ```
 
 **4. Start the development server:**
