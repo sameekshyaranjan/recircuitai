@@ -79,8 +79,47 @@ Uploads an image of an electronic component, stores it in ImageKit, and returns 
 ### `POST /api/auth/register`
 Registers a new user (hashes password securely via Mongoose hook) and returns a JSON Web Token.
 
+**JSON Payload:**
+```json
+{
+  "name": "John Doe",
+  "email": "john@example.com",
+  "password": "securepassword123"
+}
+```
+
+**Success Response (201 Created):**
+```json
+{
+  "success": true,
+  "_id": "60d5ec49b392...",
+  "name": "John Doe",
+  "email": "john@example.com",
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+}
+```
+
 ### `POST /api/auth/login`
 Authenticates a user via email/password and returns a JSON Web Token.
+
+**JSON Payload:**
+```json
+{
+  "email": "john@example.com",
+  "password": "securepassword123"
+}
+```
+
+**Success Response (200 OK):**
+```json
+{
+  "success": true,
+  "_id": "60d5ec49b392...",
+  "name": "John Doe",
+  "email": "john@example.com",
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+}
+```
 
 ## ⚙️ Local Setup & Installation
 
