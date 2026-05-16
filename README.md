@@ -155,3 +155,29 @@ JWT_EXPIRES_IN=30d
 ```bash
 npm run dev
 ```
+
+## 🧪 Testing the APIs (Postman / cURL)
+
+**1. Authentication:**
+First, create an account using the `/api/auth/register` endpoint or login using `/api/auth/login`.
+
+**2. Bearer Token:**
+Copy the `token` from the JSON response. For protected endpoints, you need to include this token in your request headers:
+```http
+Authorization: Bearer <YOUR_JWT_TOKEN>
+```
+
+**3. Uploading an Image:**
+To test the `/api/upload` endpoint, ensure you use `form-data` in your request body. Add a key named `image` (type `File`) and attach an image file. 
+
+## 🔑 External Services Setup
+
+To get the required API keys for your `.env` file:
+- **MongoDB Atlas:** Create a free cluster at [MongoDB](https://www.mongodb.com/cloud/atlas), set up a database user, and get your connection string.
+- **ImageKit:** Sign up at [ImageKit.io](https://imagekit.io/) to get your Public Key, Private Key, and URL Endpoint from the developer dashboard.
+- **Gemini AI:** Get your free API key from [Google AI Studio](https://aistudio.google.com/).
+
+## 🤝 Next Steps
+The backend is currently in active development. Upcoming phases include:
+- Completing User Dashboard and Scan History APIs.
+- Developing the **React (Vite) + Tailwind CSS** frontend application to consume these endpoints and provide a full UI for the ReCircuit platform.
